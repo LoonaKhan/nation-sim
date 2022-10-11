@@ -9,22 +9,20 @@ type Country struct {
 	Population []Person
 }
 
-func Print(c *Country) {
-	fmt.Printf("Country Name: %s\n"+
+func CountryString(c *Country) string {
+	return fmt.Sprintf("Country Name: %s\n"+
 		"Bank balance: %d\n"+
 		"num of Factories: %d\n"+
-		"Population: %d",
-		c.Name, c.Bank.Money, len(c.Factories), len(c.Population))
+		"Population: %d\n",
+		c.Name, c.Bank.money, len(c.Factories), len(c.Population))
 }
 
-func Simulate(c *Country) {
+func calcEconomy(c *Country) {
 	/*
-		simulates a country.
-
 		Adds up all the costs of each component in the country;
-			population
-			factories
-			banks
+				population
+				factories
+				banks
 
 		and then adds up all of their incomes
 	*/
@@ -41,5 +39,16 @@ func Simulate(c *Country) {
 	totalIncome += FactoriesIncome(&c.Factories)
 
 	BankTransaction(&c.Bank, (totalIncome - totalCosts))
+}
 
+func Simulate(c *Country) {
+	/* Simulates a country.
+	calculates the economy
+	tries to manage resources
+	calculates the happiness/wellbeing of the nation
+	tries to manage the wellbeing
+	manages trade/wars with other nations
+	*/
+
+	calcEconomy(c)
 }

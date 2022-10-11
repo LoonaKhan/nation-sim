@@ -49,3 +49,18 @@ country's can manage themselves:
 relations with other countries:
     how to make goroutines interact with eachother
         might need stations to keep things in order
+
+
+
+### Country Simulation
+
+- [ ]  country properties
+    - [ ]  income (factories?)
+    - [ ]  costs
+    - [ ]  people
+    - [ ]  army
+    - [ ]  happiness
+    - [ ]  trade partners
+- [ ]  concurrency to simulate each of them.
+- [ ]  trades or goes to war with others if happiness is low after building up army/economy
+    - [ ]  war checker machine?
