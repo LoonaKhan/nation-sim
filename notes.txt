@@ -1,0 +1,51 @@
+Bank
+    money: int
+    cost: int
+    deposit/withdraw()
+
+Factory
+    work()
+    baseCost: int
+    level: int
+    baseIncome: int
+    invest()?
+
+Army*
+    size: int
+    level: int
+    baseCost: int
+    invest()?
+    attack()?
+
+Person
+    level: int
+    baseCost: int
+    baseIncome: int
+
+Country
+    bank: Bank
+    factories: []Factory
+    *population: int // list of people objects?
+    *happniess: int
+    *tradingPartners: []Country
+    *army: []Army
+
+    TotalCosts()
+    TotalIncome()
+    trade()
+    goToWar()
+
+
+start with a country,
+    make a bank, and factory and person
+simulate a country's turn
+    goroutines
+        conveyor belt?
+    simulate all of the country's costs and incomes and get the net value
+    add/subtract to the bank
+
+country's can manage themselves:
+    determine things to invest in, build etc
+relations with other countries:
+    how to make goroutines interact with eachother
+        might need stations to keep things in order
