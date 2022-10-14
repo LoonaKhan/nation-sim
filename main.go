@@ -3,26 +3,67 @@ package main
 import (
 	"fmt"
 	"nsim/nsim"
+	"sync"
 )
 
-func main() { // todo: need a way to concurrently simulate this
-	c := nsim.Country{
-		Name:       "England",
-		Bank:       nsim.BankCon(),
-		Factories:  []nsim.Factory{},
-		Population: []nsim.Person{},
+var BUFFER_SIZE = 2
+
+func SimTurn(cc chan nsim.Country, turn int) chan nsim.Country {
+	/*
+		simulates a turn.
+		all countries are simulated concurrently.
+		transfers all countries to a new channel of results to be returned
+	*/
+
+	simulated := make(chan nsim.Country, BUFFER_SIZE)
+
+	wg := sync.WaitGroup{}
+	for g := 0; g < BUFFER_SIZE; g++ { // for all countries in the channel
+		wg.Add(1)
+		//g := g
+		go func() { // takes in countries, modifies and returns
+			defer wg.Done()
+			c := <-cc
+			nsim.Simulate(&c)
+			fmt.Println(nsim.CountryString(&c))
+			simulated <- c
+		}()
+	}
+	close(cc)
+
+	wg.Wait()
+	fmt.Println("Done turn:", turn)
+
+	return simulated
+
+}
+
+func Sim() { // simulates countries
+
+	CountryChan := make(chan nsim.Country, BUFFER_SIZE)
+
+	for c := 0; c < BUFFER_SIZE; c++ {
+		CountryChan <- nsim.Country{
+			Name: fmt.Sprintf("Country %d", c),
+			Bank: nsim.BankCon(),
+			Factories: []nsim.Factory{
+				nsim.FactoryCon(),
+			},
+			Population: []nsim.Person{
+				nsim.PersonCon(""),
+				nsim.PersonCon(""),
+				nsim.PersonCon(""),
+				nsim.PersonCon(""),
+				nsim.PersonCon(""),
+			},
+		}
 	}
 
-	fmt.Println(nsim.CountryString(&c)) // before
+	for i := 0; i < 2; i++ { // each iteration is its own turn
+		CountryChan = SimTurn(CountryChan, i)
+	}
+}
 
-	// adds people, a factory and simulates the economy
-	nsim.NewPerson(&c.Population, "person")
-	nsim.BuildFactory(&c.Factories)
-	nsim.Simulate(&c)
-
-	// prints data afterward
-	fmt.Println(nsim.CountryString(&c))
-	fmt.Println(nsim.PopulationString(&c.Population))
-	fmt.Println(nsim.FactoriesString(&c.Factories))
-
+func main() {
+	Sim()
 }

@@ -2,7 +2,7 @@ package nsim
 
 import "fmt"
 
-const personBaseCost = 10
+const personBaseCost = 3
 const personBaseIncome = 1
 
 type Person struct {

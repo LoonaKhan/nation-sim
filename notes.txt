@@ -54,6 +54,10 @@ relations with other countries:
 
 ### Country Simulation
 
+jobs for people? # of ppl for factories and # of ppl for army.
+food?
+earning for certain resources is reduced based on the job of ppl
+
 - [ ]  country properties
     - [ ]  income (factories?)
     - [ ]  costs
