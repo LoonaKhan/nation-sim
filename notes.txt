@@ -21,6 +21,7 @@ Person
     level: int
     baseCost: int
     baseIncome: int
+    job:?
 
 Country
     bank: Bank
@@ -68,3 +69,24 @@ earning for certain resources is reduced based on the job of ppl
 - [ ]  concurrency to simulate each of them.
 - [ ]  trades or goes to war with others if happiness is low after building up army/economy
     - [ ]  war checker machine?
+
+
+
+
+should food be a resource?
+woodcutter for wood?
+costs money to assign a job.
+    unemployment gains the -employmentCost of the existing job
+countries have happiness
+    each villager has a net happiness value
+
+
+soldiers:
+    cost more -> strain the economy
+    contribute to pride -> happiness
+farmers:
+    more income(cuz of food)
+unemployed:
+    default
+nitwit:
+    no income->useless

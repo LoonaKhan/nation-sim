@@ -11,7 +11,7 @@ type Factory struct {
 	baseIncome int
 }
 
-func FactoryCon() Factory { // factory constructor
+func FactoryInit() Factory { // factory constructor
 	return Factory{
 		baseCost:   factoryBaseCost,
 		level:      1,
@@ -52,13 +52,13 @@ func FactoriesIncome(fac *[]Factory) int { // calculates the total income of all
 }
 
 func BuildFactory(fac *[]Factory) {
-	*fac = append(*fac, FactoryCon())
+	*fac = append(*fac, FactoryInit())
 }
 
 func FactoryString(f *Factory) string {
 	income, cost := FactoryIncome(f), FactoryCost(f)
 	net := income - cost
-	return fmt.Sprintf("Level: %d, "+
+	return fmt.Sprintf("level: %d, "+
 		"Cost: %d, "+
 		"Income: %d, "+
 		"Net_Profit: %d",

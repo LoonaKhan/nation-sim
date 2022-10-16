@@ -7,6 +7,7 @@ import (
 )
 
 var BUFFER_SIZE = 2
+var TURNS = 2
 
 func SimTurn(cc chan nsim.Country, turn int) chan nsim.Country {
 	/*
@@ -42,24 +43,24 @@ func Sim() { // simulates countries
 
 	CountryChan := make(chan nsim.Country, BUFFER_SIZE)
 
-	for c := 0; c < BUFFER_SIZE; c++ {
+	for c := 0; c < BUFFER_SIZE; c++ { // fills up the buffer beforehand
 		CountryChan <- nsim.Country{
 			Name: fmt.Sprintf("Country %d", c),
-			Bank: nsim.BankCon(),
+			Bank: nsim.BankInit(),
 			Factories: []nsim.Factory{
-				nsim.FactoryCon(),
+				nsim.FactoryInit(),
 			},
 			Population: []nsim.Person{
-				nsim.PersonCon(""),
-				nsim.PersonCon(""),
-				nsim.PersonCon(""),
-				nsim.PersonCon(""),
-				nsim.PersonCon(""),
+				nsim.PersonInit(""),
+				nsim.PersonInit(""),
+				nsim.PersonInit(""),
+				nsim.PersonInit(""),
+				nsim.PersonInit(""),
 			},
 		}
 	}
 
-	for i := 0; i < 2; i++ { // each iteration is its own turn
+	for i := 0; i < TURNS; i++ { // each iteration is its own turn
 		CountryChan = SimTurn(CountryChan, i)
 	}
 }

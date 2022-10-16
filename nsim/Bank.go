@@ -8,7 +8,7 @@ type Bank struct {
 	cost  int
 }
 
-func BankCon() Bank {
+func BankInit() Bank {
 	return Bank{
 		money: bankBaseMoney,
 		cost:  bankBaseCost,
