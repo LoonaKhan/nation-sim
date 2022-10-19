@@ -15,3 +15,13 @@ The goal for this game is to make complex countries that can manage themselves a
   - war
   - happiness
   - other resources
+
+## country properties
+  - [ ]  income
+  - [ ]  costs
+  - [ ]  people
+  - [ ]  army
+  - [ ]  happiness
+  - [ ]  trade partners
+- [ ]  trades or goes to war with others if happiness is low after building up army/economy
+  - [ ]  war checker machine?

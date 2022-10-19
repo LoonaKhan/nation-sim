@@ -53,22 +53,14 @@ relations with other countries:
 
 
 
-### Country Simulation
 
-jobs for people? # of ppl for factories and # of ppl for army.
-food?
-earning for certain resources is reduced based on the job of ppl
 
-- [ ]  country properties
-    - [ ]  income (factories?)
-    - [ ]  costs
-    - [ ]  people
-    - [ ]  army
-    - [ ]  happiness
-    - [ ]  trade partners
-- [ ]  concurrency to simulate each of them.
-- [ ]  trades or goes to war with others if happiness is low after building up army/economy
-    - [ ]  war checker machine?
+
+
+happiness: pride + resource excess(food, wood money)
+pride:
+resource houses: FoodSilo, LumberCamps
+army object
 
 
 

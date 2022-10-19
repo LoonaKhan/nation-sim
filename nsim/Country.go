@@ -1,15 +1,18 @@
 package nsim
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const countryBaseHappiness = 50
 
 type Country struct { // todo: make these encapsulated
 	Name       string
-	happiness  int
-	Bank       Bank
-	Factories  []Factory
-	Population []Person
+	happiness  int       // happiness is used as a factor for decision making
+	Bank       Bank      // bank stores money and the building itself has a cost
+	Factories  []Factory // factories generate money
+	Population []Person  // Population supplies people who can take on jobs
+	army       []*Person // a list of all people people in the army. just a list of references
 }
 
 func CountryInit(name string, initPeople int) Country { // constructor
@@ -31,6 +34,10 @@ func CountryInit(name string, initPeople int) Country { // constructor
 // GETTERS/SETTERS
 func CountryHappiness(c *Country) int { // getter for happiness
 	return c.happiness
+}
+
+func ArmySize(c *Country) int { // gets the size of the country's army
+	return len(c.army)
 }
 
 // SIMULATERS
@@ -58,8 +65,21 @@ func calcEconomy(c *Country) {
 	BankTransaction(&c.Bank, (totalIncome - totalCosts))
 }
 
-func calcHappiness(c *Country) { // calculates and modifies a country's happiness
+func calcExcess(c *Country) {}
 
+func calcHappiness(c *Country) int { // calculates and modifies a country's happiness
+	/*
+		Happiness is calculated based on the pride of the people and the excess of resources.
+		Resource excess has a higher weight
+		Pride does not need to be too high, but negatives severely lower happiness
+	*/
+	prideWeight := 1
+	excessWeight := 1
+
+	pride := ArmySize(c) // for now directly corresponds to the army size. later could be military history
+	// calculates the excess of each resource
+
+	// puts them into an equation and returns
 }
 
 func Simulate(c *Country) {
