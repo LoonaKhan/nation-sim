@@ -2,25 +2,26 @@ package nsim
 
 import (
 	"fmt"
+	"math"
 )
 
-const countryBaseHappiness = 50
+const countryBaseHappiness = 2
 
 type Country struct { // todo: make these encapsulated
 	Name       string
-	happiness  int       // happiness is used as a factor for decision making
+	happiness  float64   // happiness is used as a factor for decision making
 	Bank       Bank      // bank stores money and the building itself has a cost
 	Factories  []Factory // factories generate money
 	Population []Person  // Population supplies people who can take on jobs
 	army       []*Person // a list of all people people in the army. just a list of references
 }
 
-func CountryInit(name string, initPeople int) Country { // constructor
+func CountryInit(name string, initPeople int) *Country { // constructor
 	c := Country{
 		Name:       name,
 		happiness:  countryBaseHappiness,
 		Bank:       BankInit(),
-		Factories:  []Factory{},
+		Factories:  []Factory{FactoryInit()},
 		Population: []Person{},
 	}
 
@@ -28,12 +29,17 @@ func CountryInit(name string, initPeople int) Country { // constructor
 		NewPerson(&c.Population, "")
 	}
 
-	return c
+	return &c
 }
 
 // GETTERS/SETTERS
-func CountryHappiness(c *Country) int { // getter for happiness
+func CountryHappiness(c *Country) float64 { // getter for happiness
 	return c.happiness
+}
+
+func ModHappiness(c *Country, delta float64) {
+	// we only change happiness by modifying it, not setting it
+	c.happiness += delta
 }
 
 func ArmySize(c *Country) int { // gets the size of the country's army
@@ -67,19 +73,20 @@ func calcEconomy(c *Country) {
 
 func calcExcess(c *Country) {}
 
-func calcHappiness(c *Country) int { // calculates and modifies a country's happiness
+func calcHappiness(c *Country) { // calculates and applies the modification
 	/*
 		Happiness is calculated based on the pride of the people and the excess of resources.
 		Resource excess has a higher weight
 		Pride does not need to be too high, but negatives severely lower happiness
+		todo: modify this once u have implemented food and wood
 	*/
-	prideWeight := 1
-	excessWeight := 1
 
-	pride := ArmySize(c) // for now directly corresponds to the army size. later could be military history
+	pride := math.Log2(float64(ArmySize(c)) + 0.25) // pride
 	// calculates the excess of each resource
 
-	// puts them into an equation and returns
+	// puts them into an equation
+	delta := pride
+	ModHappiness(c, (delta - c.happiness))
 }
 
 func Simulate(c *Country) {
