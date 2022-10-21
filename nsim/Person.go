@@ -2,6 +2,7 @@ package nsim
 
 import "fmt"
 
+// job titles are appended to the beginning of person names.
 var jobs = map[string]map[string]int{ // jobs can specialize people
 	"unemployed": {"baseCost": 2, "baseIncome": 3},                        // default
 	"farmer":     {"baseCost": 2, "baseIncome": 5},                        // 2x food/income

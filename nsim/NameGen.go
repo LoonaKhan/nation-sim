@@ -82,3 +82,10 @@ func ChooseCountryName() string {
 
 	return Name
 }
+
+func ChoosePersonName() string {
+	/*
+		1 in 5 chance of adding a middle name
+		very small chance of adding "of [cName]"
+	*/
+}
