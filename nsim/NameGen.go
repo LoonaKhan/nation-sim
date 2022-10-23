@@ -20,11 +20,23 @@ type CNameOps struct {
 	Names       []CountryName `json:"Names"`
 }
 
+type PeopleNames struct {
+	FirstNames  []string `json:"firstNames"`
+	MiddleNames []string `json:"middleNames"`
+	LastNames   []string `json:"lastNames"`
+}
+
 var countryOps = utils.Read[CNameOps]("nsim/names/countries.json")
 var cNames = countryOps.Names
 var cPrefixes = countryOps.Prefixes
 var cSuffixes = countryOps.Suffixes
 var cDescriptors = countryOps.Descriptors
+
+// todo: categorize names based on ethnicity?
+var pplNames = utils.Read[PeopleNames]("nsim/names/people.json")
+var firstNames = pplNames.FirstNames
+var middleNames = pplNames.MiddleNames
+var lastNames = pplNames.LastNames
 
 func ChooseCountryName() string {
 	/*
@@ -41,7 +53,7 @@ func ChooseCountryName() string {
 	Name := ""
 
 	switch r.Intn(3) {
-	case 0: // use a prefix. ex: "The repulic of frankia and angland"
+	case 0: // use a prefix. ex: "The great repulic of frankia and angland"
 		Name += "The "
 
 		if r.Intn(10) == 1 { //adds a descriptor
@@ -58,7 +70,7 @@ func ChooseCountryName() string {
 
 		break
 
-	case 1: // use a suffix. ex: "The frankish and anglish republic"
+	case 1: // use a suffix. ex: "The great frankish and anglish republic"
 		Name += "The "
 
 		if r.Intn(10) == 1 { //adds a descriptor
@@ -88,4 +100,15 @@ func ChoosePersonName() string {
 		1 in 5 chance of adding a middle name
 		very small chance of adding "of [cName]"
 	*/
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+	name := firstNames[r.Intn(len(firstNames))] + " "
+
+	if r.Intn(10) == 1 { // 1 in 10 chance of giving the person a middle name
+		name += middleNames[r.Intn(len(middleNames))] + " "
+	}
+
+	name += lastNames[r.Intn(len(lastNames))]
+
+	return name
 }

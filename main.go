@@ -27,6 +27,7 @@ func SimTurn(cc chan *nsim.Country, turn int) chan *nsim.Country {
 			c := <-cc
 			nsim.Simulate(c)
 			fmt.Println(nsim.CountryString(c))
+			//fmt.Println(nsim.PopulationString(&c.Population))
 			simulated <- c
 		}()
 	}

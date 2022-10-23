@@ -26,7 +26,7 @@ func CountryInit(name string, initPeople int) *Country { // constructor
 	}
 
 	for i := 0; i < initPeople; i++ { // we initialize the country with a certain number of people
-		NewPerson(&c.Population, "")
+		NewPerson(&c.Population, ChoosePersonName())
 	}
 
 	return &c
