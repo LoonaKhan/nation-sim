@@ -97,18 +97,20 @@ func ChooseCountryName() string {
 
 func ChoosePersonName() string {
 	/*
-		1 in 5 chance of adding a middle name
-		very small chance of adding "of [cName]"
-	*/
-	s := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(s)
-	name := firstNames[r.Intn(len(firstNames))] + " "
+			1 in 5 chance of adding a middle name
+			very small chance of adding "of [cName]"
+		*//*
+		s := rand.NewSource(time.Now().UnixNano())
+		r := rand.New(s)
+		name := firstNames[r.Intn(len(firstNames))] + " "
 
-	if r.Intn(10) == 1 { // 1 in 10 chance of giving the person a middle name
-		name += middleNames[r.Intn(len(middleNames))] + " "
-	}
+		if r.Intn(10) == 1 { // 1 in 10 chance of giving the person a middle name
+			name += middleNames[r.Intn(len(middleNames))] + " "
+		}
 
-	name += lastNames[r.Intn(len(lastNames))]
+		name += lastNames[r.Intn(len(lastNames))]*/
+
+	name := "generic citizen name"
 
 	return name
 }

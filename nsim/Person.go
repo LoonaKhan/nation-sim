@@ -3,12 +3,34 @@ package nsim
 import "fmt"
 
 // job titles are appended to the beginning of person names.
+// make this a json
 var jobs = map[string]map[string]int{ // jobs can specialize people
-	"unemployed": {"baseCost": 2, "baseIncome": 3},                        // default
-	"farmer":     {"baseCost": 2, "baseIncome": 5},                        // 2x food/income
-	"soldier":    {"baseCost": 4, "baseIncome": 3, "happinessFactor": 5},  // contributes to happiness(pride), but also fear
-	"nitwit":     {"baseCost": 2, "baseIncome": 0, "happinessFactor": -1}, // no income and useless
-	"lumberjack": {},                                                      // still dont know. but he gathers wood
+	"unemployed": { // default
+		"baseCost":   2,
+		"baseIncome": 3,
+		"foodCost":   5,
+		"foodIncome": 5,
+	},
+	"farmer": { // 2x food/income
+		"baseCost":   2,
+		"baseIncome": 5,
+		"foodCost":   6,
+		"foodIncome": 8,
+	},
+	"soldier": { // contributes to happiness(pride), but also fear
+		"baseCost":   4,
+		"baseIncome": 3,
+		"foodCost":   8,
+		"foodIncome": 3,
+	},
+	"nitwit": { // no income and useless
+		"baseCost":        2,
+		"baseIncome":      0,
+		"happinessFactor": -1,
+		"foodCost":        5,
+		"foodIncome":      0,
+	},
+	"lumberjack": {}, // still dont know. but he gathers wood
 }
 
 type Person struct {
@@ -17,6 +39,8 @@ type Person struct {
 	level      int
 	baseCost   int
 	baseIncome int
+	foodCost   int
+	foodIncome int
 }
 
 // INIT METHODS
@@ -32,6 +56,8 @@ func PersonInit(name string) Person {
 		job:        "unemployed",
 		baseCost:   jobs["unemployed"]["baseCost"],
 		baseIncome: jobs["unemployed"]["baseIncome"],
+		foodCost:   jobs["unemployed"]["foodCost"],
+		foodIncome: jobs["unemployed"]["foodIncome"],
 	}
 }
 
@@ -61,6 +87,14 @@ func PersonLevelUp(p *Person) { // levels up a person
 	p.level++
 }
 
+func PersonFoodCost(p *Person) int {
+	return p.foodCost
+}
+
+func PersonFoodIncome(p *Person) int {
+	return p.foodIncome
+}
+
 func PersonJob(p *Person) string { // getter for a person's job
 	return p.job
 }
@@ -71,6 +105,7 @@ func AssignJob(p *Person, newJob string) { // assigns a new job
 		p.job = newJob
 		p.baseIncome = jobs[newJob]["baseIncome"]
 		p.baseCost = jobs[newJob]["baseCost"]
+		p.foodCost = jobs[newJob]["foodCost"]
 	}
 
 }
@@ -90,6 +125,22 @@ func PopulationIncome(pop *[]Person) int { // calculates the income of all peopl
 		popIncome += PersonIncome(&(*pop)[p])
 	}
 	return popIncome
+}
+
+func PopulationFoodCost(pop *[]Person) int {
+	popFoodCost := 0
+	for p := range *pop {
+		popFoodCost += PersonFoodCost(&(*pop)[p])
+	}
+	return popFoodCost
+}
+
+func PopulationFoodIncome(pop *[]Person) int {
+	popFoodIncome := 0
+	for p := range *pop {
+		popFoodIncome += PersonFoodIncome(&(*pop)[p])
+	}
+	return popFoodIncome
 }
 
 // TOSTRING METHODS

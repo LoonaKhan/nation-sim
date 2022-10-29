@@ -76,6 +76,7 @@ countries have happiness
 soldiers:
     cost more -> strain the economy
     contribute to pride -> happiness
+    cost more food
 farmers:
     more income(cuz of food)
 unemployed:

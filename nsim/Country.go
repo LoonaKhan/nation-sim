@@ -6,11 +6,16 @@ import (
 )
 
 const countryBaseHappiness = 2
+const excessLimiter = 5.0
+const foodHappinessCap = 10
+const woodHappinessCap = 10
 
 type Country struct { // todo: make these encapsulated
 	Name       string
 	happiness  float64   // happiness is used as a factor for decision making
 	Bank       Bank      // bank stores money and the building itself has a cost
+	Lodge      Lodge     // lodge stores wood. wood is used for all infrastructure
+	Silo       Silo      // Silo's store food. food is used to feed villagers
 	Factories  []Factory // factories generate money
 	Population []Person  // Population supplies people who can take on jobs
 	army       []*Person // a list of all people people in the army. just a list of references
@@ -21,6 +26,8 @@ func CountryInit(name string, initPeople int) *Country { // constructor
 		Name:       name,
 		happiness:  countryBaseHappiness,
 		Bank:       BankInit(),
+		Lodge:      LodgeInit(),
+		Silo:       SiloInit(),
 		Factories:  []Factory{FactoryInit()},
 		Population: []Person{},
 	}
@@ -71,7 +78,13 @@ func calcEconomy(c *Country) {
 	BankTransaction(&c.Bank, (totalIncome - totalCosts))
 }
 
-func calcExcess(c *Country) {}
+func calcFoodProduction(c *Country) {
+	//subtracts production by the consumption and modifies the silo
+	totalProduction := PopulationFoodIncome(&c.Population)
+	totalCost := PopulationFoodCost(&c.Population)
+
+	SiloFoodMod(&c.Silo, (totalProduction - totalCost))
+}
 
 func calcHappiness(c *Country) { // calculates and applies the modification
 	/*
@@ -83,9 +96,12 @@ func calcHappiness(c *Country) { // calculates and applies the modification
 
 	pride := math.Log2(float64(ArmySize(c)) + 0.25) // pride
 	// calculates the excess of each resource
+	foodExcess := math.Min(
+		(float64(PopulationFoodIncome(&c.Population)-PopulationFoodCost(&c.Population)) / float64(excessLimiter)),
+		foodHappinessCap)
 
 	// puts them into an equation
-	delta := pride
+	delta := foodExcess + pride
 	ModHappiness(c, (delta - c.happiness))
 }
 
@@ -98,6 +114,9 @@ func Simulate(c *Country) {
 	manages trade/wars with other nations
 	*/
 
+	// todo: test
+	calcFoodProduction(c)
+	calcHappiness(c)
 	calcEconomy(c)
 }
 
