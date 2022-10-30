@@ -1,5 +1,7 @@
 package nsim
 
+// todo: move bank, silo and lodge to a town hall?
+
 const bankBaseCost = 10
 const bankBaseMoney = 100
 

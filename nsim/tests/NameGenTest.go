@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"nsim/nsim"
+	"nsim/nsim/name-gen"
 )
 
 func genCountryNameTest() {
-	fmt.Println(nsim.ChooseCountryName())
+	fmt.Println(name_gen.ChooseCountryName())
 }
 
 func genPeopleNameTest() {
-	fmt.Println(nsim.ChoosePersonName())
+	fmt.Println(name_gen.ChoosePersonName())
 }
 
 func main() {

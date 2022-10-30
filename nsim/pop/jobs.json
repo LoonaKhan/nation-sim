@@ -1,0 +1,51 @@
+{
+  "unemployed": {
+    "name": "unemployed",
+    "income": { "base-value": 1, "scalable": false },
+    "food-production": { "base-value": 1, "scalable": false },
+    "wood-production": { "base-value": 1, "scalable": false },
+    "happiness-bonus": 0
+  },
+  "farmer": {
+    "name": "farmer",
+    "income": { "base-value": -1, "scalable": false },
+    "food-production": { "base-value": 4, "scalable": true },
+    "wood-production": { "base-value": 0, "scalable": false },
+    "happiness-bonus": 0
+  },
+  "soldier": {
+    "name": "soldier",
+    "income": { "base-value": -4, "scalable": false },
+    "food-production": { "base-value": 0, "scalable": false },
+    "wood-production": { "base-value": 0, "scalable": false },
+    "happiness-bonus": 0
+  },
+  "nitwit": {
+    "name": "nitwit",
+    "income": { "base-value": -1, "scalable": false },
+    "food-production": { "base-value": -1, "scalable": false },
+    "wood-production": { "base-value": -1, "scalable": false },
+    "happiness-bonus": -1
+  },
+  "lumberjack": {
+    "name": "lumberjack",
+    "income": { "base-value": -1, "scalable": false },
+    "food-production": { "base-value": 0, "scalable": false },
+    "wood-production": { "base-value": 4, "scalable": true },
+    "happiness-bonus": 0
+  },
+  "worker": {
+    "name": "worker",
+    "income": { "base-value": 4, "scalable": true },
+    "food-production": { "base-value": -1, "scalable": false },
+    "wood-production": { "base-value": -1, "scalable": false },
+    "happiness-bonus": 0
+  },
+  "merchant": {
+    "name": "merchant",
+    "income": { "base-value": 4, "scalable": true },
+    "food-production": { "base-value": -1, "scalable": false },
+    "wood-production": { "base-value": -1, "scalable": false },
+    "happiness-bonus": 0
+  }
+}

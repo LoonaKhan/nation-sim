@@ -1,4 +1,4 @@
-package utils
+package json
 
 import (
 	"encoding/json"
@@ -17,11 +17,11 @@ func Read[T any](path string) T { // uses a template to determine the structure 
 
 	defer file.Close()
 
-	var c T
+	var data T
 	byteValue, _ := ioutil.ReadAll(file)
 
-	json.Unmarshal([]byte(byteValue), &c)
+	json.Unmarshal([]byte(byteValue), &data)
 
-	return c
+	return data
 
 }

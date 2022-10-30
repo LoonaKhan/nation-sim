@@ -4,11 +4,13 @@ import "fmt"
 
 const factoryBaseCost = 10
 const factoryBaseIncome = 20
+const factoryWoodCost = 10
 
 type Factory struct {
 	baseCost   int
 	level      int
 	baseIncome int
+	woodCost   int
 }
 
 func FactoryInit() Factory { // factory constructor
@@ -16,6 +18,7 @@ func FactoryInit() Factory { // factory constructor
 		baseCost:   factoryBaseCost,
 		level:      1,
 		baseIncome: factoryBaseIncome,
+		woodCost:   factoryWoodCost,
 	}
 }
 
@@ -23,8 +26,12 @@ func FactoryIncome(f *Factory) int { // income scales with level
 	return f.baseIncome * f.level
 }
 
-func FactoryCost(f *Factory) int { // cost scales with level?
+func FactoryCost(f *Factory) int { // cost scales with level? todo: cost does not scale with level. u build more buildings and they get more profitable
 	return f.baseCost * f.level
+}
+
+func FactoryWoodCost(f *Factory) int {
+	return f.woodCost
 }
 
 func FactoryLevel(f *Factory) int {
@@ -49,6 +56,14 @@ func FactoriesIncome(fac *[]Factory) int { // calculates the total income of all
 		fIncome += FactoryIncome(&(*fac)[f])
 	}
 	return fIncome
+}
+
+func FactoriesWoodCost(fac *[]Factory) int {
+	fCost := 0
+	for f := range *fac {
+		fCost += FactoryWoodCost(&(*fac)[f])
+	}
+	return fCost
 }
 
 func BuildFactory(fac *[]Factory) {

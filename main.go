@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"nsim/nsim"
+	"nsim/nsim/name-gen"
 	"sync"
 )
 
@@ -45,7 +46,7 @@ func Sim() { // simulates countries
 	CountryChan := make(chan *nsim.Country, BUFFER_SIZE)
 
 	for c := 0; c < BUFFER_SIZE; c++ { // fills up the buffer beforehand
-		CountryChan <- nsim.CountryInit(nsim.ChooseCountryName(), 5)
+		CountryChan <- nsim.CountryInit(name_gen.ChooseCountryName(), 5)
 	}
 
 	for i := 0; i < TURNS; i++ { // each iteration is its own turn

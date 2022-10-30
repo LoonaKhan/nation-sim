@@ -1,9 +1,9 @@
-package nsim
+package name_gen
 
 import (
 	"fmt"
 	"math/rand"
-	"nsim/utils"
+	"nsim/utils/json"
 	"time"
 )
 
@@ -26,14 +26,14 @@ type PeopleNames struct {
 	LastNames   []string `json:"lastNames"`
 }
 
-var countryOps = utils.Read[CNameOps]("nsim/names/countries.json")
+var countryOps = json.Read[CNameOps]("nsim/names/countries.json")
 var cNames = countryOps.Names
 var cPrefixes = countryOps.Prefixes
 var cSuffixes = countryOps.Suffixes
 var cDescriptors = countryOps.Descriptors
 
 // todo: categorize names based on ethnicity?
-var pplNames = utils.Read[PeopleNames]("nsim/names/people.json")
+var pplNames = json.Read[PeopleNames]("nsim/names/people.json")
 var firstNames = pplNames.FirstNames
 var middleNames = pplNames.MiddleNames
 var lastNames = pplNames.LastNames
@@ -97,14 +97,14 @@ func ChooseCountryName() string {
 
 func ChoosePersonName() string {
 	/*
-			1 in 5 chance of adding a middle name
-			very small chance of adding "of [cName]"
-		*//*
+		1 in 5 chance of adding a middle name
+		very small chance of adding "of [cName]"
+	*/ /*
 		s := rand.NewSource(time.Now().UnixNano())
 		r := rand.New(s)
 		name := firstNames[r.Intn(len(firstNames))] + " "
 
-		if r.Intn(10) == 1 { // 1 in 10 chance of giving the person a middle name
+		if r.Intn(10) == 1 { // 1 in 10 chance of giving the pop a middle name
 			name += middleNames[r.Intn(len(middleNames))] + " "
 		}
 

@@ -3,55 +3,80 @@ package nsim
 import (
 	"fmt"
 	"math"
+	"nsim/nsim/name-gen"
+	"nsim/nsim/pop"
 )
 
-const countryBaseHappiness = 2
+const baseHapp = 2
 const excessLimiter = 5.0
-const foodHappinessCap = 10
-const woodHappinessCap = 10
+const excessHappCap = 10
+const prideUpperLimit = 5
+const prideLowerLimit = -1
+const prideModifier = 0.25
 
 type Country struct { // todo: make these encapsulated
 	Name       string
-	happiness  float64   // happiness is used as a factor for decision making
-	Bank       Bank      // bank stores money and the building itself has a cost
-	Lodge      Lodge     // lodge stores wood. wood is used for all infrastructure
-	Silo       Silo      // Silo's store food. food is used to feed villagers
-	Factories  []Factory // factories generate money
-	Population []Person  // Population supplies people who can take on jobs
-	army       []*Person // a list of all people people in the army. just a list of references
+	Happiness  float64       // Happiness is used as a factor for decision making
+	Bank       Bank          // bank stores money and the building itself has a cost
+	Lodge      Lodge         // lodge stores wood. wood is used for all infrastructure
+	Silo       Silo          // Silo's store food. food is used to feed villagers
+	Factories  []Factory     // factories generate money
+	Population []pop.Person  // Population supplies people who can take on jobs
+	Army       []*pop.Person // a list of all people people in the Army. just a list of references
 }
 
 func CountryInit(name string, initPeople int) *Country { // constructor
 	c := Country{
 		Name:       name,
-		happiness:  countryBaseHappiness,
+		Happiness:  baseHapp,
 		Bank:       BankInit(),
 		Lodge:      LodgeInit(),
 		Silo:       SiloInit(),
 		Factories:  []Factory{FactoryInit()},
-		Population: []Person{},
+		Population: []pop.Person{},
+		Army:       []*pop.Person{},
 	}
 
 	for i := 0; i < initPeople; i++ { // we initialize the country with a certain number of people
-		NewPerson(&c.Population, ChoosePersonName())
+		pop.NewPerson(&c.Population, name_gen.ChoosePersonName())
 	}
 
 	return &c
 }
 
 // GETTERS/SETTERS
-func CountryHappiness(c *Country) float64 { // getter for happiness
-	return c.happiness
+func CountryHappiness(c *Country) float64 { // getter for Happiness
+	return c.Happiness
 }
 
 func ModHappiness(c *Country, delta float64) {
-	// we only change happiness by modifying it, not setting it
-	c.happiness += delta
+	// we only change Happiness by modifying it, not setting it
+	c.Happiness += delta
 }
 
-func ArmySize(c *Country) int { // gets the size of the country's army
-	return len(c.army)
+func ArmySize(c *Country) int { // gets the size of the country's Army
+	return len(c.Army)
 }
+
+func NewSoldier(c *Country) {
+	/*
+		looks for the first citizen that is not a soldier
+		switches their profession
+		appends their reference to army
+	*/
+
+	for p := range c.Population {
+		if pop.GetJob(&c.Population[p]) != "soldier" {
+			pop.AssignJob(&c.Population[p], "soldier")
+			c.Army = append(c.Army, &c.Population[p])
+			return
+		}
+	}
+}
+
+// remove soldier
+
+// soldier death?
 
 // SIMULATERS
 func calcEconomy(c *Country) {
@@ -65,57 +90,70 @@ func calcEconomy(c *Country) {
 	*/
 
 	// costs
-	var totalCosts int
-	totalCosts += PopulationCost(&c.Population)
-	totalCosts += FactoriesCost(&c.Factories)
-	totalCosts += BankCost(&c.Bank)
+	var costs int
+	costs += FactoriesCost(&c.Factories)
+	costs += BankCost(&c.Bank)
+	costs += LodgeCost(&c.Lodge)
+	costs += SiloCost(&c.Silo)
 
 	// incomes
-	var totalIncome int
-	totalIncome += PopulationIncome(&c.Population)
-	totalIncome += FactoriesIncome(&c.Factories)
+	var income int
+	income += pop.PopIncome(&c.Population)
+	income += FactoriesIncome(&c.Factories)
 
-	BankTransaction(&c.Bank, (totalIncome - totalCosts))
+	BankTransaction(&c.Bank, (income - costs))
 }
 
 func calcFoodProduction(c *Country) {
-	//subtracts production by the consumption and modifies the silo
-	totalProduction := PopulationFoodIncome(&c.Population)
-	totalCost := PopulationFoodCost(&c.Population)
+	SiloFoodMod(&c.Silo, pop.PopFoodProduction(&c.Population))
+}
 
-	SiloFoodMod(&c.Silo, (totalProduction - totalCost))
+func calcWoodProduction(c *Country) {
+	popProduction := pop.PopWoodProduction(&c.Population) // dont have a way of producing wood yet
+	factoriesProduction := FactoriesWoodCost(&c.Factories)
+	LodgeWoodMod(&c.Lodge, (popProduction - factoriesProduction))
 }
 
 func calcHappiness(c *Country) { // calculates and applies the modification
 	/*
 		Happiness is calculated based on the pride of the people and the excess of resources.
 		Resource excess has a higher weight
-		Pride does not need to be too high, but negatives severely lower happiness
+		Pride does not need to be too high, but negatives severely lower Happiness
 		todo: modify this once u have implemented food and wood
 	*/
 
-	pride := math.Log2(float64(ArmySize(c)) + 0.25) // pride
+	// pride from the army
+	pride := math.Max(
+		math.Min(math.Log2(float64(ArmySize(c))+prideModifier), prideUpperLimit),
+		prideLowerLimit,
+	)
 	// calculates the excess of each resource
 	foodExcess := math.Min(
-		(float64(PopulationFoodIncome(&c.Population)-PopulationFoodCost(&c.Population)) / float64(excessLimiter)),
-		foodHappinessCap)
+		(float64(pop.PopFoodProduction(&c.Population)) / float64(excessLimiter)),
+		excessHappCap)
+	woodExcess := math.Min(
+		(float64(pop.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(excessLimiter)),
+		excessHappCap)
+	// happiness bonuses from the population
+	happBonus := pop.PopHappBonus(&c.Population)
 
 	// puts them into an equation
-	delta := foodExcess + pride
-	ModHappiness(c, (delta - c.happiness))
+	delta := foodExcess + pride + woodExcess + float64(happBonus)
+	ModHappiness(c, (delta - c.Happiness))
 }
 
 func Simulate(c *Country) {
 	/* Simulates a country.
 	calculates the economy
 	tries to manage resources
-	calculates the happiness/wellbeing of the nation
+	calculates the Happiness/wellbeing of the nation
 	tries to manage the wellbeing
 	manages trade/wars with other nations
 	*/
 
 	// todo: test
 	calcFoodProduction(c)
+	calcWoodProduction(c)
 	calcHappiness(c)
 	calcEconomy(c)
 }
@@ -124,7 +162,19 @@ func Simulate(c *Country) {
 func CountryString(c *Country) string {
 	return fmt.Sprintf("Country name: %s\n"+
 		"Bank balance: %d\n"+
+		"Food: %d\n"+
+		"Wood: %d\n"+
+		"Happiness: %.2f\n"+
 		"num of Factories: %d\n"+
-		"Population: %d\n",
-		c.Name, c.Bank.money, len(c.Factories), len(c.Population))
+		"Population: %d\n"+
+		"Army Size: %d\n",
+		c.Name,
+		BankMoney(&c.Bank),
+		SiloFood(&c.Silo),
+		LodgeWood(&c.Lodge),
+		CountryHappiness(c),
+		len(c.Factories),
+		len(c.Population),
+		len(c.Army),
+	)
 }
