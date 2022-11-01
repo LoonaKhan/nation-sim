@@ -1,4 +1,4 @@
-package name_gen
+package names
 
 import (
 	"fmt"
