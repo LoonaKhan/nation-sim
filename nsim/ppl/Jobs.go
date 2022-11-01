@@ -1,4 +1,4 @@
-package pop
+package ppl
 
 import (
 	"nsim/utils/json"
@@ -19,4 +19,4 @@ type Job struct {
 	Name           string             `json:"name"`
 }
 
-var Jobs = json.Read[map[string]Job]("nsim/pop/jobs.json")
+var Jobs = json.Read[map[string]Job]("nsim/ppl/jobs.json")

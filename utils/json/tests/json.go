@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"nsim/nsim/globvars"
 	"nsim/nsim/names"
-	"nsim/nsim/pop"
+	"nsim/nsim/ppl"
 	"nsim/utils/json"
 )
 
@@ -12,8 +12,8 @@ func ReadJsonTest(path string) names.CNameOps { // we test it with a country nam
 	return json.Read[names.CNameOps](path)
 }
 
-func ReadJobsTest(path string) map[string]pop.Job {
-	return json.Read[map[string]pop.Job](path)
+func ReadJobsTest(path string) map[string]ppl.Job {
+	return json.Read[map[string]ppl.Job](path)
 }
 
 func ReadGlobvarsTest(path string) globvars.Globvars {

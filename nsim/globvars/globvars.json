@@ -3,7 +3,8 @@
     "base-money": 100,
     "base-wood": 100,
     "base-food": 100,
-    "base-level": 1
+    "base-level": 1,
+    "cost": 10
   },
   "country": {
     "base-happiness": 2,

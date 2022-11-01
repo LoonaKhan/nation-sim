@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math"
 	"nsim/nsim/names"
-	"nsim/nsim/pop"
+	"nsim/nsim/ppl"
+	town_hall "nsim/nsim/town-hall"
 )
 
 const baseHapp = 2
@@ -16,29 +17,25 @@ const prideModifier = 0.25
 
 type Country struct { // todo: make these encapsulated
 	Name       string
-	Happiness  float64       // Happiness is used as a factor for decision making
-	Bank       Bank          // bank stores money and the building itself has a cost
-	Lodge      Lodge         // lodge stores wood. wood is used for all infrastructure
-	Silo       Silo          // Silo's store food. food is used to feed villagers
-	Factories  []Factory     // factories generate money
-	Population []pop.Person  // Population supplies people who can take on jobs
-	Army       []*pop.Person // a list of all people people in the Army. just a list of references
+	Happiness  float64            // Happiness is used as a factor for decision making
+	TownHall   town_hall.TownHall // the townhall keeps track of food, money and wood
+	Factories  []Factory          // factories generate money
+	Population []ppl.Person       // Population supplies people who can take on jobs
+	Army       []*ppl.Person      // a list of all people people in the Army. just a list of references
 }
 
 func CountryInit(name string, initPeople int) *Country { // constructor
 	c := Country{
 		Name:       name,
 		Happiness:  baseHapp,
-		Bank:       BankInit(),
-		Lodge:      LodgeInit(),
-		Silo:       SiloInit(),
+		TownHall:   town_hall.Init(),
 		Factories:  []Factory{FactoryInit()},
-		Population: []pop.Person{},
-		Army:       []*pop.Person{},
+		Population: []ppl.Person{},
+		Army:       []*ppl.Person{},
 	}
 
 	for i := 0; i < initPeople; i++ { // we initialize the country with a certain number of people
-		pop.NewPerson(&c.Population, names.ChoosePersonName())
+		ppl.NewPerson(&c.Population, names.ChoosePersonName())
 	}
 
 	return &c
@@ -66,8 +63,8 @@ func NewSoldier(c *Country) {
 	*/
 
 	for p := range c.Population {
-		if pop.GetJob(&c.Population[p]) != "soldier" {
-			pop.AssignJob(&c.Population[p], "soldier")
+		if ppl.GetJob(&c.Population[p]) != "soldier" {
+			ppl.AssignJob(&c.Population[p], "soldier")
 			c.Army = append(c.Army, &c.Population[p])
 			return
 		}
@@ -92,26 +89,24 @@ func calcEconomy(c *Country) {
 	// costs
 	var costs int
 	costs += FactoriesCost(&c.Factories)
-	costs += BankCost(&c.Bank)
-	costs += LodgeCost(&c.Lodge)
-	costs += SiloCost(&c.Silo)
+	costs += town_hall.Cost(&c.TownHall)
 
 	// incomes
 	var income int
-	income += pop.PopIncome(&c.Population)
+	income += ppl.PopIncome(&c.Population)
 	income += FactoriesIncome(&c.Factories)
 
-	BankTransaction(&c.Bank, (income - costs))
+	town_hall.Transaction(&c.TownHall, (income - costs))
 }
 
 func calcFoodProduction(c *Country) {
-	SiloFoodMod(&c.Silo, pop.PopFoodProduction(&c.Population))
+	town_hall.FoodMod(&c.TownHall, ppl.PopFoodProduction(&c.Population))
 }
 
 func calcWoodProduction(c *Country) {
-	popProduction := pop.PopWoodProduction(&c.Population) // dont have a way of producing wood yet
-	factoriesProduction := FactoriesWoodCost(&c.Factories)
-	LodgeWoodMod(&c.Lodge, (popProduction - factoriesProduction))
+	popProduction := ppl.PopWoodProduction(&c.Population)  // production from the population
+	factoriesProduction := FactoriesWoodCost(&c.Factories) // cost. from buildings
+	town_hall.WoodMod(&c.TownHall, (popProduction - factoriesProduction))
 }
 
 func calcHappiness(c *Country) { // calculates and applies the modification
@@ -129,13 +124,13 @@ func calcHappiness(c *Country) { // calculates and applies the modification
 	)
 	// calculates the excess of each resource
 	foodExcess := math.Min(
-		(float64(pop.PopFoodProduction(&c.Population)) / float64(excessLimiter)),
+		(float64(ppl.PopFoodProduction(&c.Population)) / float64(excessLimiter)),
 		excessHappCap)
 	woodExcess := math.Min(
-		(float64(pop.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(excessLimiter)),
+		(float64(ppl.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(excessLimiter)),
 		excessHappCap)
 	// happiness bonuses from the population
-	happBonus := pop.PopHappBonus(&c.Population)
+	happBonus := ppl.PopHappBonus(&c.Population)
 
 	// puts them into an equation
 	delta := foodExcess + pride + woodExcess + float64(happBonus)
@@ -160,18 +155,19 @@ func Simulate(c *Country) {
 
 // TOSTRING METHOD
 func CountryString(c *Country) string {
+	// todo add production, costs for each resource
 	return fmt.Sprintf("Country name: %s\n"+
-		"Bank balance: %d\n"+
-		"Food: %d\n"+
-		"Wood: %d\n"+
-		"Happiness: %.2f\n"+
-		"num of Factories: %d\n"+
-		"Population: %d\n"+
+		"Bank balance: %d\n"+ // money prod/cost
+		"Food: %d\n"+ // food prod/cost
+		"Wood: %d\n"+ // wood prod/cost
+		"Happiness: %.2f\n"+ // happiness prod/cost
+		"num of Factories: %d\n"+ // total production from factories
+		"Population: %d\n"+ // jobs of ppl
 		"Army Size: %d\n",
 		c.Name,
-		BankMoney(&c.Bank),
-		SiloFood(&c.Silo),
-		LodgeWood(&c.Lodge),
+		town_hall.Money(&c.TownHall),
+		town_hall.Food(&c.TownHall),
+		town_hall.Wood(&c.TownHall),
 		CountryHappiness(c),
 		len(c.Factories),
 		len(c.Population),

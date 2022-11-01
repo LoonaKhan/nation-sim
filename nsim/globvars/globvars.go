@@ -7,6 +7,7 @@ type TownHall struct { // townhall
 	Base_wood  int `json:"base-wood"`
 	Base_food  int `json:"base-food"`
 	Base_level int `json:"base-level"`
+	Cost       int `json:"cost"`
 }
 
 type Country struct { // country

@@ -16,7 +16,7 @@ func Init() TownHall {
 		food:  globvars.Globs.Townhall.Base_food,
 		wood:  globvars.Globs.Townhall.Base_wood,
 		level: globvars.Globs.Townhall.Base_level,
-		cost:  0,
+		cost:  globvars.Globs.Townhall.Cost,
 	}
 }
 
@@ -42,4 +42,9 @@ func Money(t *TownHall) int {
 }
 func Transaction(t *TownHall, amount int) {
 	t.money += amount
+}
+
+// Cost
+func Cost(t *TownHall) int {
+	return t.cost
 }
