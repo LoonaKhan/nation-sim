@@ -122,7 +122,10 @@
     {"std": "Altenberg", "alt": "Alten"},
     {"std": "Aegaphos", "alt": "Aegaphocian"},
     {"std": "Tragena", "alt": "Tragenae"},
-    {"std": "Tanaclea", "alt": "Tanaclean"}
+    {"std": "Tanaclea", "alt": "Tanaclean"},
+    {"std": "Yeravan", "alt":"Yeravanian"},
+    {"std": "Catonica", "alt":"Catonican"},
+    {"std": "Karellia", "alt": "Karellian"}
   ],
   "Suffixes": [
     "Republic",
