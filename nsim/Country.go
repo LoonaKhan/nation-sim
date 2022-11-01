@@ -3,7 +3,7 @@ package nsim
 import (
 	"fmt"
 	"math"
-	"nsim/nsim/name-gen"
+	"nsim/nsim/names"
 	"nsim/nsim/pop"
 )
 
@@ -38,7 +38,7 @@ func CountryInit(name string, initPeople int) *Country { // constructor
 	}
 
 	for i := 0; i < initPeople; i++ { // we initialize the country with a certain number of people
-		pop.NewPerson(&c.Population, name_gen.ChoosePersonName())
+		pop.NewPerson(&c.Population, names.ChoosePersonName())
 	}
 
 	return &c

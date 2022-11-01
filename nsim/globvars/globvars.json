@@ -1,0 +1,19 @@
+{
+  "town-hall": {
+    "base-money": 100,
+    "base-wood": 100,
+    "base-food": 100,
+    "base-level": 1
+  },
+  "country": {
+    "base-happiness": 2,
+    "excess-limiter": 5.0,
+    "excess-happiness-cap": 10,
+    "pride-upper-limit": 5,
+    "pride-lower-limit": -1,
+    "pride-modifier": 0.25
+  },
+  "person": {
+    "base-level": 1
+  }
+}
