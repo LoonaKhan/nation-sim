@@ -2,6 +2,8 @@ package globvars
 
 import "nsim/utils/json"
 
+// todo: maybe just use a plain go file instead of a json?
+
 type TownHall struct { // townhall
 	Base_money int `json:"base-money"`
 	Base_wood  int `json:"base-wood"`
