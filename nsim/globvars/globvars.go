@@ -13,11 +13,11 @@ type TownHall struct { // townhall
 }
 
 type Country struct { // country
-	Base_happ         int     `json:"base-happiness"`
+	Base_happ         float64 `json:"base-happiness"`
 	Excess_limiter    float64 `json:"excess-limiter"`
-	Excess_happ_cap   int     `json:"excess-happiness-cap"`
-	Pride_upper_limit int     `json:"pride-upper-limit"`
-	Pride_lower_limit int     `json:"pride-lower-limit"`
+	Excess_happ_cap   float64 `json:"excess-happiness-cap"`
+	Pride_upper_limit float64 `json:"pride-upper-limit"`
+	Pride_lower_limit float64 `json:"pride-lower-limit"`
 	Pride_mod         float64 `json:"pride-modifier"`
 }
 

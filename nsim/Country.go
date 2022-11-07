@@ -3,17 +3,11 @@ package nsim
 import (
 	"fmt"
 	"math"
+	"nsim/nsim/globvars"
 	"nsim/nsim/names"
 	"nsim/nsim/ppl"
 	town_hall "nsim/nsim/town-hall"
 )
-
-const baseHapp = 2
-const excessLimiter = 5.0
-const excessHappCap = 10
-const prideUpperLimit = 5
-const prideLowerLimit = -1
-const prideModifier = 0.25
 
 type Country struct { // todo: make these encapsulated
 	Name       string
@@ -27,8 +21,8 @@ type Country struct { // todo: make these encapsulated
 func CountryInit(name string, initPeople int) *Country { // constructor
 	c := Country{
 		Name:       name,
-		Happiness:  baseHapp,
 		TownHall:   town_hall.Init(),
+		Happiness:  globvars.Globs.Country.Base_happ,
 		Factories:  []Factory{FactoryInit()},
 		Population: []ppl.Person{},
 		Army:       []*ppl.Person{},
@@ -46,9 +40,9 @@ func CountryHappiness(c *Country) float64 { // getter for Happiness
 	return c.Happiness
 }
 
-func ModHappiness(c *Country, delta float64) {
+func ModHappiness(c *Country, newValue float64) {
 	// we only change Happiness by modifying it, not setting it
-	c.Happiness += delta
+	c.Happiness = newValue
 }
 
 func ArmySize(c *Country) int { // gets the size of the country's Army
@@ -103,10 +97,29 @@ func calcFoodProduction(c *Country) {
 	town_hall.FoodMod(&c.TownHall, ppl.PopFoodProduction(&c.Population))
 }
 
+func foodExcess(c *Country) float64 {
+	return math.Min(
+		(float64(ppl.PopFoodProduction(&c.Population)) / float64(globvars.Globs.Country.Excess_limiter)),
+		globvars.Globs.Country.Excess_happ_cap)
+}
+
 func calcWoodProduction(c *Country) {
 	popProduction := ppl.PopWoodProduction(&c.Population)  // production from the population
 	factoriesProduction := FactoriesWoodCost(&c.Factories) // cost. from buildings
 	town_hall.WoodMod(&c.TownHall, (popProduction - factoriesProduction))
+}
+
+func woodExcess(c *Country) float64 {
+	return math.Min(
+		(float64(ppl.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(globvars.Globs.Country.Excess_limiter)),
+		globvars.Globs.Country.Excess_happ_cap)
+}
+
+func calcPride(c *Country) float64 {
+	return math.Max(
+		math.Min(math.Log2(float64(ArmySize(c))+globvars.Globs.Country.Pride_mod), globvars.Globs.Country.Pride_upper_limit),
+		globvars.Globs.Country.Pride_lower_limit,
+	)
 }
 
 func calcHappiness(c *Country) { // calculates and applies the modification
@@ -114,27 +127,14 @@ func calcHappiness(c *Country) { // calculates and applies the modification
 		Happiness is calculated based on the pride of the people and the excess of resources.
 		Resource excess has a higher weight
 		Pride does not need to be too high, but negatives severely lower Happiness
-		todo: modify this once u have implemented food and wood
 	*/
 
-	// pride from the army
-	pride := math.Max(
-		math.Min(math.Log2(float64(ArmySize(c))+prideModifier), prideUpperLimit),
-		prideLowerLimit,
-	)
-	// calculates the excess of each resource
-	foodExcess := math.Min(
-		(float64(ppl.PopFoodProduction(&c.Population)) / float64(excessLimiter)),
-		excessHappCap)
-	woodExcess := math.Min(
-		(float64(ppl.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(excessLimiter)),
-		excessHappCap)
 	// happiness bonuses from the population
 	happBonus := ppl.PopHappBonus(&c.Population)
 
-	// puts them into an equation
-	delta := foodExcess + pride + woodExcess + float64(happBonus)
-	ModHappiness(c, (delta - c.Happiness))
+	// happiness is based on foodand wood excesses, pride and happiness bonuses
+	happ := foodExcess(c) + calcPride(c) + woodExcess(c) + float64(happBonus)
+	ModHappiness(c, happ)
 }
 
 func Simulate(c *Country) {
