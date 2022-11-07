@@ -12,11 +12,11 @@ type TownHall struct {
 
 func Init() TownHall {
 	return TownHall{
-		money: globvars.Globs.Townhall.Base_money,
-		food:  globvars.Globs.Townhall.Base_food,
-		wood:  globvars.Globs.Townhall.Base_wood,
-		level: globvars.Globs.Townhall.Base_level,
-		cost:  globvars.Globs.Townhall.Cost,
+		money: globvars.ThGlob.BaseMoney,
+		food:  globvars.ThGlob.BaseFood,
+		wood:  globvars.ThGlob.BaseWood,
+		level: globvars.ThGlob.BaseLevel,
+		cost:  globvars.ThGlob.Cost,
 	}
 }
 
@@ -45,6 +45,6 @@ func Transaction(t *TownHall, amount int) {
 }
 
 // Cost
-func Cost(t *TownHall) int {
+func Cost(t *TownHall) int { // mantenance cost
 	return t.cost
 }

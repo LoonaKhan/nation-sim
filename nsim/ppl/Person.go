@@ -1,6 +1,9 @@
 package ppl
 
-import "fmt"
+import (
+	"fmt"
+	"nsim/nsim/globvars"
+)
 
 type Person struct {
 	name  string
@@ -17,7 +20,7 @@ func PersonInit(name string) Person {
 	*/
 	return Person{
 		name:  name,
-		level: 1,
+		level: globvars.PplGlob.BaseLevel,
 		job:   Jobs["unemployed"],
 	}
 }

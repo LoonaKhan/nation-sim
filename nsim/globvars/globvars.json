@@ -16,5 +16,10 @@
   },
   "person": {
     "base-level": 1
+  },
+  "factory": {
+    "cost": 10,
+    "base-wood-cost": 10,
+    "base-production": 20
   }
 }

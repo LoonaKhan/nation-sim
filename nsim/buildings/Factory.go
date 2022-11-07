@@ -1,10 +1,9 @@
-package nsim
+package buildings
 
-import "fmt"
-
-const factoryBaseCost = 10
-const factoryBaseIncome = 20
-const factoryWoodCost = 10
+import (
+	"fmt"
+	"nsim/nsim/globvars"
+)
 
 type Factory struct {
 	baseCost   int
@@ -15,37 +14,37 @@ type Factory struct {
 
 func FactoryInit() Factory { // factory constructor
 	return Factory{
-		baseCost:   factoryBaseCost,
+		baseCost:   globvars.FacGlob.Cost,
 		level:      1,
-		baseIncome: factoryBaseIncome,
-		woodCost:   factoryWoodCost,
+		baseIncome: globvars.FacGlob.BaseProduction,
+		woodCost:   globvars.FacGlob.BaseWoodCost,
 	}
 }
 
-func FactoryIncome(f *Factory) int { // income scales with level
+func Income(f *Factory) int { // income scales with level
 	return f.baseIncome * f.level
 }
 
-func FactoryCost(f *Factory) int { // cost scales with level? todo: cost does not scale with level. u build more buildings and they get more profitable
-	return f.baseCost * f.level
+func Cost(f *Factory) int { // cost to initially build
+	return f.baseCost
 }
 
-func FactoryWoodCost(f *Factory) int {
+func WoodCost(f *Factory) int { // maintenance
 	return f.woodCost
 }
 
-func FactoryLevel(f *Factory) int {
+func Level(f *Factory) int {
 	return f.level
 }
 
-func FactoryLevelUp(f *Factory) {
+func LevelUp(f *Factory) {
 	f.level++
 }
 
 func FactoriesCost(fac *[]Factory) int { // calculates the total cost of all factories in a country
 	fCost := 0
 	for f := range *fac {
-		fCost += FactoryCost(&(*fac)[f])
+		fCost += Cost(&(*fac)[f])
 	}
 	return fCost
 }
@@ -53,7 +52,7 @@ func FactoriesCost(fac *[]Factory) int { // calculates the total cost of all fac
 func FactoriesIncome(fac *[]Factory) int { // calculates the total income of all factories in a country
 	fIncome := 0
 	for f := range *fac {
-		fIncome += FactoryIncome(&(*fac)[f])
+		fIncome += Income(&(*fac)[f])
 	}
 	return fIncome
 }
@@ -61,17 +60,17 @@ func FactoriesIncome(fac *[]Factory) int { // calculates the total income of all
 func FactoriesWoodCost(fac *[]Factory) int {
 	fCost := 0
 	for f := range *fac {
-		fCost += FactoryWoodCost(&(*fac)[f])
+		fCost += WoodCost(&(*fac)[f])
 	}
 	return fCost
 }
 
-func BuildFactory(fac *[]Factory) {
+func Build(fac *[]Factory) {
 	*fac = append(*fac, FactoryInit())
 }
 
-func FactoryString(f *Factory) string {
-	income, cost := FactoryIncome(f), FactoryCost(f)
+func ToString(f *Factory) string {
+	income, cost := Income(f), Cost(f)
 	net := income - cost
 	return fmt.Sprintf("level: %d, "+
 		"Cost: %d, "+
@@ -83,7 +82,7 @@ func FactoryString(f *Factory) string {
 func FactoriesString(fac *[]Factory) string {
 	str := "Factories: [\n"
 	for f := range *fac {
-		str += " {" + FactoryString(&(*fac)[f]) + "}\n"
+		str += " {" + ToString(&(*fac)[f]) + "}\n"
 	}
 	str += "]"
 	return str

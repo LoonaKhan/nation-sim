@@ -3,6 +3,7 @@ package nsim
 import (
 	"fmt"
 	"math"
+	"nsim/nsim/buildings"
 	"nsim/nsim/globvars"
 	"nsim/nsim/names"
 	"nsim/nsim/ppl"
@@ -11,19 +12,19 @@ import (
 
 type Country struct { // todo: make these encapsulated
 	Name       string
-	Happiness  float64            // Happiness is used as a factor for decision making
-	TownHall   town_hall.TownHall // the townhall keeps track of food, money and wood
-	Factories  []Factory          // factories generate money
-	Population []ppl.Person       // Population supplies people who can take on jobs
-	Army       []*ppl.Person      // a list of all people people in the Army. just a list of references
+	Happiness  float64             // Happiness is used as a factor for decision making
+	TownHall   town_hall.TownHall  // the townhall keeps track of food, money and wood
+	Factories  []buildings.Factory // factories generate money
+	Population []ppl.Person        // Population supplies people who can take on jobs
+	Army       []*ppl.Person       // a list of all people people in the Army. just a list of references
 }
 
 func CountryInit(name string, initPeople int) *Country { // constructor
 	c := Country{
 		Name:       name,
 		TownHall:   town_hall.Init(),
-		Happiness:  globvars.Globs.Country.Base_happ,
-		Factories:  []Factory{FactoryInit()},
+		Happiness:  globvars.CGlob.BaseHapp,
+		Factories:  []buildings.Factory{buildings.FactoryInit()},
 		Population: []ppl.Person{},
 		Army:       []*ppl.Person{},
 	}
@@ -82,13 +83,13 @@ func calcEconomy(c *Country) {
 
 	// costs
 	var costs int
-	costs += FactoriesCost(&c.Factories)
+	//costs += buildings.FactoriesCost(&c.Factories)
 	costs += town_hall.Cost(&c.TownHall)
 
 	// incomes
 	var income int
 	income += ppl.PopIncome(&c.Population)
-	income += FactoriesIncome(&c.Factories)
+	income += buildings.FactoriesIncome(&c.Factories)
 
 	town_hall.Transaction(&c.TownHall, (income - costs))
 }
@@ -99,26 +100,26 @@ func calcFoodProduction(c *Country) {
 
 func foodExcess(c *Country) float64 {
 	return math.Min(
-		(float64(ppl.PopFoodProduction(&c.Population)) / float64(globvars.Globs.Country.Excess_limiter)),
-		globvars.Globs.Country.Excess_happ_cap)
+		(float64(ppl.PopFoodProduction(&c.Population)) / float64(globvars.CGlob.ExcessLim)),
+		globvars.CGlob.ExcessHappCap)
 }
 
 func calcWoodProduction(c *Country) {
-	popProduction := ppl.PopWoodProduction(&c.Population)  // production from the population
-	factoriesProduction := FactoriesWoodCost(&c.Factories) // cost. from buildings
+	popProduction := ppl.PopWoodProduction(&c.Population)            // production from the population
+	factoriesProduction := buildings.FactoriesWoodCost(&c.Factories) // cost. from buildings
 	town_hall.WoodMod(&c.TownHall, (popProduction - factoriesProduction))
 }
 
 func woodExcess(c *Country) float64 {
 	return math.Min(
-		(float64(ppl.PopWoodProduction(&c.Population)-FactoriesWoodCost(&c.Factories)) / float64(globvars.Globs.Country.Excess_limiter)),
-		globvars.Globs.Country.Excess_happ_cap)
+		(float64(ppl.PopWoodProduction(&c.Population)-buildings.FactoriesWoodCost(&c.Factories)) / float64(globvars.CGlob.ExcessLim)),
+		globvars.CGlob.ExcessHappCap)
 }
 
 func calcPride(c *Country) float64 {
 	return math.Max(
-		math.Min(math.Log2(float64(ArmySize(c))+globvars.Globs.Country.Pride_mod), globvars.Globs.Country.Pride_upper_limit),
-		globvars.Globs.Country.Pride_lower_limit,
+		math.Min(math.Log2(float64(ArmySize(c))+globvars.Globs.Country.PrideMod), globvars.CGlob.PrideUl),
+		globvars.CGlob.PrideLl,
 	)
 }
 
